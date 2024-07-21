@@ -5,10 +5,10 @@ export default defineConfig({
   introspect: {
     casing: "camel",
   },
-  schema: "./app/drizzle/schema.server.ts",
+  schema: "./src/drizzle/schema.ts",
   dialect: "sqlite",
   verbose: true,
-  out: "./app/drizzle/migrations",
+  out: "./src/drizzle/migrations",
   strict: true,
   driver: "d1-http",
   dbCredentials: {
