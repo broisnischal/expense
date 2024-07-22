@@ -5,17 +5,21 @@ import { prettyJSON } from "hono/pretty-json";
 import { Redis } from "@upstash/redis/cloudflare";
 import { Ratelimit } from "@upstash/ratelimit";
 
+import { Pinecone } from "@pinecone-database/pinecone";
+
 type Bindings = {
   [key in keyof CloudflareBindings]: CloudflareBindings[key];
 };
 
 const authorsApp = new Hono()
-  .get("/", (c) => c.json({ result: "list authors" }))
+  .get("/", (c) => {
+    return c.json({ result: "list authors" });
+  })
   .post("/", (c) => c.json({ result: "create an author" }, 201))
   .get("/:id", (c) => c.json({ result: `get ${c.req.param("id")}` }));
 
 const booksApp = new Hono()
-  .get("/", (c) => c.json({ result: "list books" }))
+  .get("/", (c) => c.json({ result: `list books ` }))
   .post("/", (c) => c.json({ result: "create a book" }, 201))
   .get("/:id", (c) => c.json({ result: `get ${c.req.param("id")}` }));
 
@@ -26,8 +30,45 @@ const app = new Hono<{ Bindings: Bindings }>()
 app.use(prettyJSON());
 app.use("*", cors());
 
-app.get("/", (c) => {
-  return c.text("Hello Hono!");
+app.get("/", async (c) => {
+  // const pc = new Pinecone({
+  //   apiKey: c.env.PINE_CONE_API_KEY,
+  // });
+
+  // const index = pc.index("shopapp");
+
+  // let ress = await index.namespace("ns1").upsert([
+  //   {
+  //     id: "vec1",
+  //     values: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+  //     metadata: { genre: "drama" },
+  //   },
+  //   {
+  //     id: "vec2",
+  //     values: [0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2],
+  //     metadata: { genre: "action" },
+  //   },
+  //   {
+  //     id: "vec3",
+  //     values: [0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3],
+  //     metadata: { genre: "drama" },
+  //   },
+  //   {
+  //     id: "vec4",
+  //     values: [0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4],
+  //     metadata: { genre: "action" },
+  //   },
+  // ]);
+
+  // const res = await index.namespace("ns1").query({
+  //   topK: 2,
+  //   vector: [0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3],
+  //   includeValues: true,
+  //   includeMetadata: true,
+  //   filter: { genre: { $eq: "action" } },
+  // });
+
+  return c.text(`Hello Hono!  `);
 });
 
 app.get("/ai", async (c) => {
@@ -125,8 +166,6 @@ app.get("/ai", async (c) => {
 
 //   return c.text(answer);
 // })
-
-app.get("/", (c) => c.text("Pretty Blog API"));
 
 app.get("/limit", async (c) => {
   const ratelimit = new Ratelimit({
