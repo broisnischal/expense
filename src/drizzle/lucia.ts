@@ -9,6 +9,11 @@ export function initializeLucia(D1: D1Database) {
   });
 
   return new Lucia(adapter, {
+    sessionCookie: {
+      attributes: {
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
     getUserAttributes: (user) => {
       return {
         id: user.id,
