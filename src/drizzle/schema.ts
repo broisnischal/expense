@@ -47,8 +47,8 @@ export const sessions = sqliteTable("sessions", {
     .primaryKey()
     .notNull()
     .$defaultFn(() => generateId(15)),
-  userId: text("userId")
+  userId: text("user_id")
     .notNull()
     .references(() => users.id),
-  expiresAt: integer("expiresAt").notNull(),
+  expiresAt: integer("expires_at").notNull(),
 });

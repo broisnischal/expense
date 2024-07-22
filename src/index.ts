@@ -35,7 +35,7 @@ app.use("*", cors());
 
 app.get("/", async (c) => {
   let user = c.get("user");
-  console.log(user?.id);
+  console.log(user?.email);
 
   return c.text(`Hello Hono!  `);
 });

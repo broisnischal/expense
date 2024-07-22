@@ -13,6 +13,7 @@
     "up": "drizzle-kit up:sqlite --schema=./app/drizzle/schema.server.ts"
   },
   "dependencies": {
+    "@hono/zod-validator": "^0.2.2",
     "@libsql/client": "^0.7.0",
     "@lucia-auth/adapter-drizzle": "^1.0.7",
     "@lucia-auth/adapter-sqlite": "^3.0.2",
