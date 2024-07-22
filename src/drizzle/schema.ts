@@ -5,6 +5,11 @@ import {
   uniqueIndex,
 } from "drizzle-orm/sqlite-core";
 
+export const notes = sqliteTable("notes", {
+  id: integer("id").notNull().primaryKey(),
+  text: text("text").notNull(),
+});
+
 export const users = sqliteTable(
   "users",
   {
