@@ -1,36 +1,54 @@
+import { sql } from "drizzle-orm";
 import {
   integer,
   sqliteTable,
   text,
   uniqueIndex,
 } from "drizzle-orm/sqlite-core";
+import { generateId } from "lucia";
 
-export const notes = sqliteTable("notes", {
+export const account = sqliteTable("account", {
+  id: integer("id").notNull().primaryKey(),
+  name: text("name").notNull(),
+  type: text("type", {
+    enum: ["checking", "savings"],
+  })
+    .notNull()
+    .default("checking"),
+  authorId: text("authorId")
+    .notNull()
+    .references(() => users.id),
+  balance: integer("balance").notNull().default(0),
+  createdAt: text("createdAt")
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+});
+
+export const transactions = sqliteTable("transactions", {
   id: integer("id").notNull().primaryKey(),
   text: text("text").notNull(),
 });
 
-export const users = sqliteTable(
-  "users",
-  {
-    id: integer("id").primaryKey(),
-    name: text("name").default("Anonymous"),
-    email: text("email").notNull().unique(),
-    avatar_url: text("avatar_url").default(
-      "https://static-00.iconduck.com/assets.00/user-avatar-icon-1820x2048-mp3gzcbn.png"
-    ),
-    type: text("type", {
-      enum: ["user", "admin", "nees"],
-    })
-      .notNull()
-      .default("user"),
-    provider: text("provider").notNull(),
-    providerId: text("providerId").notNull(),
-  },
-  (table) => {
-    return {
-      emailIndex: uniqueIndex("emailIndex").on(table.email),
-      // provider_providerId: uniqueIndex('provider_providerId').on(table.provider, table.providerId),
-    };
-  }
-);
+export const users = sqliteTable("users", {
+  id: text("id")
+    .primaryKey()
+    .notNull()
+    .$defaultFn(() => generateId(15)),
+  name: text("name").notNull(),
+  email: text("email").notNull().unique(),
+  password: text("password").notNull(),
+});
+
+export type InsertUser = typeof users.$inferInsert;
+export type SelectUser = typeof users.$inferSelect;
+
+export const sessions = sqliteTable("sessions", {
+  id: text("id")
+    .primaryKey()
+    .notNull()
+    .$defaultFn(() => generateId(15)),
+  userId: text("userId")
+    .notNull()
+    .references(() => users.id),
+  expiresAt: integer("expiresAt").notNull(),
+});
