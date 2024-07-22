@@ -4,8 +4,9 @@ import { prettyJSON } from "hono/pretty-json";
 
 import { Redis } from "@upstash/redis/cloudflare";
 import { Ratelimit } from "@upstash/ratelimit";
-
-import { Pinecone } from "@pinecone-database/pinecone";
+import { Index } from "@upstash/vector";
+import { drizzle } from "drizzle-orm/d1";
+import * as schema from "./drizzle/schema";
 
 type Bindings = {
   [key in keyof CloudflareBindings]: CloudflareBindings[key];
@@ -31,43 +32,6 @@ app.use(prettyJSON());
 app.use("*", cors());
 
 app.get("/", async (c) => {
-  // const pc = new Pinecone({
-  //   apiKey: c.env.PINE_CONE_API_KEY,
-  // });
-
-  // const index = pc.index("shopapp");
-
-  // let ress = await index.namespace("ns1").upsert([
-  //   {
-  //     id: "vec1",
-  //     values: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
-  //     metadata: { genre: "drama" },
-  //   },
-  //   {
-  //     id: "vec2",
-  //     values: [0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2],
-  //     metadata: { genre: "action" },
-  //   },
-  //   {
-  //     id: "vec3",
-  //     values: [0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3],
-  //     metadata: { genre: "drama" },
-  //   },
-  //   {
-  //     id: "vec4",
-  //     values: [0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4],
-  //     metadata: { genre: "action" },
-  //   },
-  // ]);
-
-  // const res = await index.namespace("ns1").query({
-  //   topK: 2,
-  //   vector: [0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3],
-  //   includeValues: true,
-  //   includeMetadata: true,
-  //   filter: { genre: { $eq: "action" } },
-  // });
-
   return c.text(`Hello Hono!  `);
 });
 
@@ -89,43 +53,85 @@ app.get("/ai", async (c) => {
   return c.json({ answer: answer });
 });
 
-// app.post("/notes", async (c) => {
-//   const { text } = await c.req.json();
-//   if (!text) {
-//     return c.text("Missing text", 400);
-//   }
+type Metadata = {
+  title: string;
+  genre: "sci-fi" | "fantasy" | "horror" | "action";
+  category: "classic" | "modern";
+};
 
-//   const { success, meta, results } = await c.env.DB.prepare(
-//     "INSERT INTO notes (text) VALUES (?) RETURNING *"
-//   )
-//     .bind(text)
-//     .all();
+app.post("/notes", async (c) => {
+  const index = new Index<Metadata>({
+    url: "https://simple-mastiff-22376-us1-vector.upstash.io",
+    token:
+      "ABgFMHNpbXBsZS1tYXN0aWZmLTIyMzc2LXVzMWFkbWluTkRBNE9EUTJZbVl0WXpObVlpMDBNRGxtTFRobE56a3RabUpoTkdFME9ESXpOREkz",
+  });
 
-//   const record = results.length ? results[0] : null;
+  const { text } = await c.req.json();
 
-//   if (!record) {
-//     return c.text("Failed to create note", 500);
-//   }
+  console.log(text);
 
-//   const { data } = await c.env.AI.run("@cf/baai/bge-base-en-v1.5", {
-//     text: [text],
-//   });
-//   const values = data[0];
+  if (!text) {
+    return c.text("Missing text", 400);
+  }
 
-//   if (!values) {
-//     return c.text("Failed to generate vector embedding", 500);
-//   }
+  const db = drizzle(c.env.DB, {
+    schema: schema,
+  });
 
-//   const { id } = record;
-//   const inserted = await c.env.MY_INDEX.upsert([
-//     {
-//       id: (id as string).toString(),
-//       values,
-//     },
-//   ]);
+  const [result] = await db
+    .insert(schema.notes)
+    .values({
+      text,
+    })
+    .returning();
 
-//   return c.json({ id, text, inserted });
-// });
+  console.log(result);
+
+  if (!result) {
+    return c.text("Failed to create note", 500);
+  }
+
+  const { data, shape } = await c.env.AI.run("@cf/baai/bge-base-en-v1.5", {
+    text: [text],
+  });
+
+  console.log(data[0]);
+
+  const values = data[0];
+
+  if (!values) {
+    return c.text("Failed to generate vector embedding", 500);
+  }
+  console.log("here");
+
+  // const { id } = record;
+  // const inserted = await c.env.MY_INDEX.upsert([
+  //   {
+  //     id: (id as string).toString(),
+  //     values,
+  //   },
+  // ]);
+  try {
+    const vectorResult = await index.upsert([
+      {
+        id: result.id.toString(),
+        vector: [...data[0]],
+        metadata: {
+          category: "classic",
+          genre: "fantasy",
+          title: "my note",
+        },
+      },
+    ]);
+
+    console.log(vectorResult);
+  } catch (error) {
+    console.error("Error upserting vector:", error);
+    return c.text("Failed to upsert vector", 500);
+  }
+
+  return c.json({ text });
+});
 
 //! Querying with vector index
 // app.get('/', async (c) => {

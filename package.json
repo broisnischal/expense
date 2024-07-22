@@ -13,9 +13,9 @@
     "up": "drizzle-kit up:sqlite --schema=./app/drizzle/schema.server.ts"
   },
   "dependencies": {
-    "@pinecone-database/pinecone": "^3.0.0",
     "@upstash/ratelimit": "^2.0.1",
     "@upstash/redis": "^1.33.0",
+    "@upstash/vector": "^1.1.4",
     "drizzle-orm": "^0.32.0",
     "hono": "^4.5.1",
     "lucia": "^3.2.0",
