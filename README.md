@@ -1,7 +1,13 @@
 ```
 npm install
 npm run dev
+
+
 ```
+
+    "@libsql/client": "^0.7.0",
+
+I removed
 
 ```
 npm run deploy
