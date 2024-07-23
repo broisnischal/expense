@@ -1,7 +1,7 @@
 {
   "name": "my-hono-app",
   "scripts": {
-    "dev": "wrangler dev?channel-crossposting",
+    "dev": "wrangler dev",
     "deploy": "wrangler deploy --minify",
     "cf-typegen": "wrangler types --env-interface CloudflareBindings",
     "generate": "npx drizzle-kit generate",
@@ -18,7 +18,7 @@
     "@lucia-auth/adapter-sqlite": "^3.0.2",
     "@upstash/ratelimit": "^2.0.1",
     "@upstash/redis": "^1.33.0",
-    "@upstash/vector": "^1.1.4",
+    "@upstash/vector": "^1.1.5",
     "better-sqlite3": "^11.1.2",
     "drizzle-orm": "^0.32.0",
     "drizzle-zod": "^0.5.1",
