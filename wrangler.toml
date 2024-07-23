@@ -1,5 +1,5 @@
 #:schema node_modules/wrangler/config-schema.json
-name = "my-hono-app"
+name = "api"
 main = "src/index.ts"
 compatibility_date = "2024-07-18"
 # compatibility_flags = ["cache_option_enabled"]
