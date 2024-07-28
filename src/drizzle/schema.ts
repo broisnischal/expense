@@ -6,7 +6,7 @@ import {
   uniqueIndex,
 } from "drizzle-orm/sqlite-core";
 import { generateId } from "lucia";
-import { Frequency } from "./enum";
+import { Frequency, NotificationType } from "./enum";
 
 export const users = sqliteTable("users", {
   id: text("id")
@@ -211,4 +211,37 @@ export const subscriptions = sqliteTable("subscriptions", {
   price: integer("price").notNull(),
   // startDate: integer("start_date"),
   // endDate: integer("end_date"),
+});
+
+export const friends = sqliteTable("friends", {
+  id: text("id")
+    .primaryKey()
+    .notNull()
+    .$defaultFn(() => generateId(15)),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id),
+  friendId: text("friend_id")
+    .notNull()
+    .references(() => users.id),
+  status: text("status", {
+    enum: ["accepted", "pending", "rejected"],
+  }),
+});
+
+export const notifications = sqliteTable("notifications", {
+  id: integer("id").notNull().primaryKey(),
+  text: text("text").notNull(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id),
+  content: text("content").notNull(),
+  type: text("type", {
+    enum: NotificationType,
+  }),
+  relatedId: text("related_id"),
+  isRead: integer("is_read").default(0).notNull(),
+  createdAt: text("created_at")
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
 });
