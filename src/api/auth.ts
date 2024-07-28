@@ -8,9 +8,22 @@ import { schema } from "../drizzle";
 import { eq } from "drizzle-orm";
 import { Scrypt } from "lucia";
 import { initializeLucia } from "../drizzle/lucia";
+import { decode, sign, verify, jwt, JwtVariables } from "hono/jwt";
 
 const authApi = new Hono<Context>()
   .get("/", (c) => {
+    const user = c.get("user");
+
+    if (!user) {
+      return c.json(
+        {
+          message: "User is not authorized",
+          success: false,
+        },
+        401
+      );
+    }
+
     return c.json({ result: "Auth API" });
   })
   .post(
@@ -67,7 +80,21 @@ const authApi = new Hono<Context>()
         append: true,
       });
 
-      return c.json({ success: true, message: "signed up" }, 201);
+      c.set("session", session);
+
+      let accessToken = await sign(
+        {
+          id: result.id,
+          session: session.id,
+          exp: Math.floor(Date.now() / 1000) + 60 * 5,
+        },
+        c.env.ACCESS_TOKEN_SECRET
+      );
+
+      return c.json(
+        { success: true, session, message: "signed up", accessToken },
+        201
+      );
     }
   )
   .post(

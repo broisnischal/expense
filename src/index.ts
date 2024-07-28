@@ -34,6 +34,7 @@ import { getConnInfo } from "hono/cloudflare-workers";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import { showRoutes } from "hono/dev";
+import { OpenAPIHono } from "@hono/zod-openapi";
 
 export type Bindings = {
   [key in keyof CloudflareBindings]: CloudflareBindings[key];
@@ -83,7 +84,7 @@ app
   .use(logger())
   .use("*", cors())
   .use(prettyJSON())
-  .use("*", authMiddleware)
+  .use(authMiddleware)
   .use("*", timing())
   // .use("*", (c, next) => {
   //   sentry({ dsn: c.env.DB, tracesSampleRate: 0.2 });
@@ -93,8 +94,8 @@ app
   .route("/ui", swaggerApp)
   .route("/auth", authApi)
   .route("/user", userApi)
-  .route("/expenses", expenseApi);
-// .onError(errorHandler);
+  .route("/expenses", expenseApi)
+  .onError(errorHandler);
 
 app.get("/", async (c) => {
   let user = c.get("user");

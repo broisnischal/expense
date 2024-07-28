@@ -20,6 +20,10 @@ COOKIE_SESSION_SECRET = "secret"
 GITHUB_CLIENT_ID = "Ov23liQlTaXkAND0Xd8I"
 GITHUB_CLIENT_SECRET = "a3be63c1a5b5809afa0899d88eb4ec8fd6feab97"
 PINE_CONE_API_KEY = "ca784ef3-8e1a-41f9-9a73-9b4331914f64"
+ACCESS_TOKEN_EXPIRE = "3600"
+REFRESH_TOKEN_EXPIRE = "86400"
+ACCESS_TOKEN_SECRET = "secret"
+REFRESH_TOKEN_SECRET = "secretREFRESH"
 
 [[d1_databases]]
 binding = "DB"                                       # i.e. available in your Worker on env.DB

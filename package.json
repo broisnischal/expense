@@ -17,6 +17,7 @@
     "@hono-rate-limiter/redis": "^0.1.4",
     "@hono/sentry": "^1.2.0",
     "@hono/swagger-ui": "^0.4.0",
+    "@hono/zod-openapi": "^0.15.1",
     "@hono/zod-validator": "^0.2.2",
     "@lucia-auth/adapter-drizzle": "^1.0.7",
     "@lucia-auth/adapter-sqlite": "^3.0.2",

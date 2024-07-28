@@ -12,6 +12,9 @@ export function initializeLucia(D1: D1Database) {
     sessionCookie: {
       attributes: {
         secure: process.env.NODE_ENV === "production",
+        domain: process.env.DOMAIN || undefined,
+        sameSite: "lax",
+        path: "/",
       },
     },
     getUserAttributes: (user) => {
