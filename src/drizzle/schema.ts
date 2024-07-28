@@ -97,6 +97,24 @@ export const accounts = sqliteTable("accounts", {
     .notNull(),
 });
 
+export const wallets = sqliteTable("wallets", {
+  id: text("id")
+    .primaryKey()
+    .notNull()
+    .$defaultFn(() => generateId(15)),
+  name: text("name").notNull(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id),
+  balance: integer("balance").notNull().default(0),
+  createdAt: text("createdAt")
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  currency: text("currency", {
+    enum: ["usd", "eur", "npr"],
+  }).default("npr"),
+});
+
 export const transactions = sqliteTable("transactions", {
   id: text("id")
     .primaryKey()
@@ -166,4 +184,31 @@ export const debts = sqliteTable("debts", {
   note: text("note").notNull(),
 });
 
+export const subscriptionTypes = sqliteTable("subscription_types", {
+  id: integer("id").notNull().primaryKey(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  image: text("image").notNull(),
+});
+
 // total purchases, total sales, to receive , to give, stock value, expences etc
+
+export const subscriptions = sqliteTable("subscriptions", {
+  id: integer("id").notNull().primaryKey(),
+  accountId: text("account_id")
+    .notNull()
+    .references(() => accounts.id),
+  subCategoryId: text("sub_category_id")
+    .notNull()
+    .references(() => subCategories.id),
+  amount: integer("amount").notNull(),
+  frequency: text("frequency", {
+    enum: Frequency,
+  }).notNull(),
+  status: text("status", {
+    enum: ["expired", "active", "upcoming"],
+  }),
+  price: integer("price").notNull(),
+  // startDate: integer("start_date"),
+  // endDate: integer("end_date"),
+});
