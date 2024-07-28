@@ -114,6 +114,8 @@ export const transactions = sqliteTable("transactions", {
   description: text("description"),
 });
 
+// schema
+
 // export const transactionTypes = sqliteTable("transaction_types", {
 //   id: integer("id").notNull().primaryKey(),
 //   name: text("name").notNull(),
