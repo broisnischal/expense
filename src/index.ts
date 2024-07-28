@@ -33,6 +33,7 @@ import { sentry } from "@hono/sentry";
 import { getConnInfo } from "hono/cloudflare-workers";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
+import { showRoutes } from "hono/dev";
 
 export type Bindings = {
   [key in keyof CloudflareBindings]: CloudflareBindings[key];
@@ -51,13 +52,13 @@ const token = "honoiscool";
 
 app
   // Middlewares
-  .get(
-    "*",
-    cache({
-      cacheName: "my-app",
-      cacheControl: "max-age=3600",
-    })
-  )
+  // .get(
+  //   "*",
+  //   cache({
+  //     cacheName: "my-app",
+  //     cacheControl: "max-age=3600",
+  //   })
+  // )
   .use("*", timeout(5000))
   .use(
     "*",
@@ -67,7 +68,7 @@ app
     })
   )
   .use(csrf({}))
-  .use(compress())
+  // .use(compress())
   // .use(
   //   "*",
   //   some(
@@ -122,4 +123,9 @@ export type { AppType };
 //   httpOnly: true,
 //   path: "/",
 //   secure: true,
+// });
+
+// showRoutes(app, {
+//   verbose: true,
+//   colorize: true,
 // });
