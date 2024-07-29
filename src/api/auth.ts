@@ -6,9 +6,10 @@ import { z } from "zod";
 import { drizzle } from "drizzle-orm/d1";
 import { schema } from "../drizzle";
 import { eq } from "drizzle-orm";
-import { Scrypt } from "lucia";
+import { Lucia, Scrypt } from "lucia";
 import { initializeLucia } from "../drizzle/lucia";
 import { decode, sign, verify, jwt, JwtVariables } from "hono/jwt";
+import { bearerAuth } from "hono/bearer-auth";
 
 const authApi = new Hono<Context>()
   .get("/", (c) => {
@@ -119,7 +120,7 @@ const authApi = new Hono<Context>()
         .where(eq(schema.users.email, email));
 
       if (!user) {
-        return c.json({ result: "invalid email credentials" }, 401);
+        return c.json({ result: "Invalid email credentials" }, 401);
       }
 
       const isValidPassword = await new Scrypt().verify(
@@ -141,7 +142,30 @@ const authApi = new Hono<Context>()
         append: true,
       });
 
-      return c.json({ success: true, message: "signed in" }, 200);
+      c.set("session", session);
+
+      // let accessToken = await sign(
+      //   {
+      //     id: user.id,
+      //     session: session.id,
+      //     exp: Math.floor(Date.now() / 1000) + 60 * 5,
+      //   },
+      //   c.env.ACCESS_TOKEN_SECRET
+      // );
+
+      // const ip = c.req.raw.headers.get("CF-Connecting-IP");
+
+      const ip = c.req.header("X-Forwarded-For") ?? c.req.header("x-real-ip");
+
+      const identifier = ip ?? "global";
+      console.log(c.req);
+      console.log(identifier);
+
+      // const newUserSession = await db.insert(schema.userSessions)
+
+      console.log("IP: ", ip);
+
+      return c.json({ success: true, message: "signed in", ...session }, 200);
     }
   )
   .post("/signout", async (c) => {

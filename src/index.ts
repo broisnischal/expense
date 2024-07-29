@@ -91,7 +91,6 @@ app
   //   next();
   // })
   // Routes
-  .route("/ui", swaggerApp)
   .route("/auth", authApi)
   .route("/user", userApi)
   .route("/expenses", expenseApi)

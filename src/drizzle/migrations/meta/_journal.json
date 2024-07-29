@@ -15,6 +15,20 @@
       "when": 1721738431079,
       "tag": "0001_fancy_hulk",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1722185775900,
+      "tag": "0002_first_terror",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1722186784165,
+      "tag": "0003_salty_epoch",
+      "breakpoints": true
     }
   ]
 }

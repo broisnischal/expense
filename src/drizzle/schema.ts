@@ -1,4 +1,4 @@
-import { sql } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
   integer,
   sqliteTable,
@@ -17,6 +17,10 @@ export const users = sqliteTable("users", {
   email: text("email").notNull().unique(),
   password: text("password").notNull(),
 });
+
+export const userRelations = relations(users, ({ many }) => ({
+  userSessions: many(userSessions),
+}));
 
 export type InsertUser = typeof users.$inferInsert;
 export type SelectUser = typeof users.$inferSelect;
@@ -51,11 +55,24 @@ export const userSessions = sqliteTable("user_sessions", {
   deviceType: text("device_type", {
     enum: ["web", "android", "ios", "desktop"],
   }),
+  longitude: text("longitude"),
+  latitude: text("latitude"),
+  country: text("country"),
+  timezone: text("timezone"),
+  city: text("city"),
+  region: text("region"),
   fcmToken: text("fcm_token"),
   ipAddress: text("ip_address").notNull(),
   userAgent: text("user_agent").notNull(),
   expiresAt: integer("expires_at").notNull(),
 });
+
+export const userSessionsRelation = relations(userSessions, ({ one }) => ({
+  user: one(users, {
+    fields: [userSessions.userId],
+    references: [users.id],
+  }),
+}));
 
 // income, expense, transfer, credit card, savings, investment, loan, mortgage, etc
 export const categories = sqliteTable("categories", {
