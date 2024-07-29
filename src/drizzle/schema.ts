@@ -294,6 +294,11 @@ export const subscriptions = sqliteTable("subscriptions", {
     enum: ["expired", "active", "upcoming"],
   }),
   price: integer("price").notNull(),
+  subscriptionTypeId: integer("subscription_type_id")
+    .notNull()
+    .references(() => subscriptionTypes.id, {
+      onDelete: "cascade",
+    }),
   // startDate: integer("start_date"),
   // endDate: integer("end_date"),
 });
@@ -306,6 +311,10 @@ export const subscriptionsRelation = relations(subscriptions, ({ one }) => ({
   subCategory: one(subCategories, {
     fields: [subscriptions.subCategoryId],
     references: [subCategories.id],
+  }),
+  subscriptionType: one(subscriptionTypes, {
+    fields: [subscriptions.subscriptionTypeId],
+    references: [subscriptionTypes.id],
   }),
 }));
 
