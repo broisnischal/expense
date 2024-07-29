@@ -18,3 +18,5 @@ export const NotificationType = [
   "event",
   "reminder",
 ] as const;
+
+export const UserRole = ["user", "admin", "super_admin"] as const;

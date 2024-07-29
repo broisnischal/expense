@@ -34,11 +34,12 @@ const authApi = new Hono<Context>()
       z.object({
         name: z.string().min(2).max(25),
         email: z.string().email(),
+        contact: z.string().min(2).max(25),
         password: z.string().min(2).max(25),
       })
     ),
     async (c) => {
-      const { name, email, password } = c.req.valid("json");
+      const { name, email, password, contact } = c.req.valid("json");
 
       const db = drizzle(c.env.DB, {
         schema: schema,
@@ -60,6 +61,7 @@ const authApi = new Hono<Context>()
         .values({
           name,
           email,
+          contact,
           password: hashedPassword,
         })
         .returning();
@@ -142,8 +144,6 @@ const authApi = new Hono<Context>()
         append: true,
       });
 
-      c.set("session", session);
-
       // let accessToken = await sign(
       //   {
       //     id: user.id,
@@ -155,15 +155,43 @@ const authApi = new Hono<Context>()
 
       // const ip = c.req.raw.headers.get("CF-Connecting-IP");
 
+      const {
+        city,
+        longitude,
+        latitude,
+        country,
+        postalCode,
+        timezone,
+        colo,
+        region,
+        regionCode,
+      } = c.req.raw.cf!;
+
       const ip = c.req.header("X-Forwarded-For") ?? c.req.header("x-real-ip");
 
       const identifier = ip ?? "global";
-      console.log(c.req);
-      console.log(identifier);
 
-      // const newUserSession = await db.insert(schema.userSessions)
+      const newSession = await db
+        .insert(schema.userSessions)
+        .values({
+          sessionId: session.id,
+          userId: user.id,
+          expiresAt: session.expiresAt.toString(),
+          ipAddress: identifier,
+          timezone: timezone as string,
+          region: region as string,
+          city: city as string,
+          longitude: longitude as string,
+          latitude: latitude as string,
+          country: country as string,
+        })
+        .returning({
+          id: schema.userSessions.id,
+        });
 
-      console.log("IP: ", ip);
+      if (!newSession) {
+        return c.json({ result: "failed to create session" }, 500);
+      }
 
       return c.json({ success: true, message: "signed in", ...session }, 200);
     }

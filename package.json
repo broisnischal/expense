@@ -8,6 +8,7 @@
     "migrate": "npx wrangler d1 migrations create expense --name new",
     "migrate:apply": "npx wrangler d1 migrations apply expense --remote",
     "migrate:local": "npx wrangler d1 migrations apply expense --local",
+    "seed": "bun run ./src/drizzle/seed.ts",
     "studio": "npx drizzle-kit studio",
     "drop": "npx drizzle-kit drop",
     "up": "drizzle-kit up:sqlite --schema=./app/drizzle/schema.server.ts"

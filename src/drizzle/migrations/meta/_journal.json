@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1721670292245,
-      "tag": "0000_nervous_boomer",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1721738431079,
-      "tag": "0001_fancy_hulk",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1722185775900,
-      "tag": "0002_first_terror",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "6",
-      "when": 1722186784165,
-      "tag": "0003_salty_epoch",
+      "when": 1722276286863,
+      "tag": "0000_cultured_korath",
       "breakpoints": true
     }
   ]

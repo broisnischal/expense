@@ -6,7 +6,7 @@ import {
   uniqueIndex,
 } from "drizzle-orm/sqlite-core";
 import { generateId } from "lucia";
-import { Frequency, NotificationType } from "./enum";
+import { Frequency, NotificationType, UserRole } from "./enum";
 
 export const users = sqliteTable("users", {
   id: text("id")
@@ -16,10 +16,17 @@ export const users = sqliteTable("users", {
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
   password: text("password").notNull(),
+  contact: text("contact").notNull(),
+  role: text("role", {
+    enum: UserRole,
+  })
+    .notNull()
+    .default("user"),
 });
 
 export const userRelations = relations(users, ({ many }) => ({
   userSessions: many(userSessions),
+  accounts: many(accounts),
 }));
 
 export type InsertUser = typeof users.$inferInsert;
@@ -36,25 +43,22 @@ export const sessions = sqliteTable("sessions", {
   expiresAt: integer("expires_at").notNull(),
 });
 
-export const notes = sqliteTable("notes", {
-  id: integer("id").notNull().primaryKey(),
-  text: text("text").notNull(),
-});
-
 export const userSessions = sqliteTable("user_sessions", {
   id: text("id")
     .primaryKey()
     .notNull()
     .$defaultFn(() => generateId(15)),
-  sessionId: text("session_id").notNull(),
+  sessionId: text("session_id")
+    .notNull()
+    .references(() => sessions.id),
   userId: text("user_id")
     .notNull()
     .references(() => users.id),
-  deviceId: text("device_id").notNull(),
-  lastSeen: integer("last_seen").notNull(),
+  deviceId: text("device_id"),
+  lastSeen: integer("last_seen"),
   deviceType: text("device_type", {
     enum: ["web", "android", "ios", "desktop"],
-  }),
+  }).default("android"),
   longitude: text("longitude"),
   latitude: text("latitude"),
   country: text("country"),
@@ -62,12 +66,16 @@ export const userSessions = sqliteTable("user_sessions", {
   city: text("city"),
   region: text("region"),
   fcmToken: text("fcm_token"),
-  ipAddress: text("ip_address").notNull(),
-  userAgent: text("user_agent").notNull(),
-  expiresAt: integer("expires_at").notNull(),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  expiresAt: text("expires_at"),
 });
 
 export const userSessionsRelation = relations(userSessions, ({ one }) => ({
+  session: one(sessions, {
+    fields: [userSessions.sessionId],
+    references: [sessions.id],
+  }),
   user: one(users, {
     fields: [userSessions.userId],
     references: [users.id],
@@ -83,6 +91,10 @@ export const categories = sqliteTable("categories", {
   name: text("name").notNull(),
 });
 
+export const categoriesRelation = relations(categories, ({ many }) => ({
+  subCategories: many(subCategories),
+}));
+
 // income - [ salary, bonus, sales ] , expense - [ rent, utilities, groceries, ],
 export const subCategories = sqliteTable("sub_categories", {
   id: text("id")
@@ -94,6 +106,11 @@ export const subCategories = sqliteTable("sub_categories", {
     .notNull()
     .references(() => categories.id),
 });
+
+export const subCategoriesRelation = relations(subCategories, ({ many }) => ({
+  category: many(categories),
+  transactions: many(transactions),
+}));
 
 // primary, main
 export const accounts = sqliteTable("accounts", {
@@ -113,6 +130,14 @@ export const accounts = sqliteTable("accounts", {
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
 });
+
+export const accountsRelation = relations(accounts, ({ one, many }) => ({
+  user: one(users, {
+    fields: [accounts.userId],
+    references: [users.id],
+  }),
+  transactions: many(transactions),
+}));
 
 export const wallets = sqliteTable("wallets", {
   id: text("id")
@@ -149,8 +174,18 @@ export const transactions = sqliteTable("transactions", {
   description: text("description"),
 });
 
-// schema
+export const transactionsRelation = relations(transactions, ({ one }) => ({
+  account: one(accounts, {
+    fields: [transactions.accountId],
+    references: [accounts.id],
+  }),
+  subCategory: one(subCategories, {
+    fields: [transactions.subCategoryId],
+    references: [subCategories.id],
+  }),
+}));
 
+// schema
 // export const transactionTypes = sqliteTable("transaction_types", {
 //   id: integer("id").notNull().primaryKey(),
 //   name: text("name").notNull(),
@@ -172,10 +207,24 @@ export const recurringTransactions = sqliteTable("recurring_transactions", {
   endDate: integer("end_date"),
   // nextDate: integer("next_date").notNull(),
   // lastDate: integer("last_date").notNull(),
-  transactionId: text("transaction_id")
-    .notNull()
-    .references(() => transactions.id),
+  // transactionId: text("transaction_id")
+  //   .notNull()
+  //   .references(() => transactions.id),
 });
+
+export const recurringTransactionsRelation = relations(
+  recurringTransactions,
+  ({ one }) => ({
+    account: one(accounts, {
+      fields: [recurringTransactions.accountId],
+      references: [accounts.id],
+    }),
+    subCategory: one(subCategories, {
+      fields: [recurringTransactions.subCategoryId],
+      references: [subCategories.id],
+    }),
+  })
+);
 
 // export type InsertUserSession = typeof userSessions.$inferInsert;
 // export type SelectUserSession = typeof userSessions.$inferSelect;
@@ -208,6 +257,13 @@ export const subscriptionTypes = sqliteTable("subscription_types", {
   image: text("image").notNull(),
 });
 
+export const subscriptionTypesRelation = relations(
+  subscriptionTypes,
+  ({ many }) => ({
+    subscriptions: many(subscriptions),
+  })
+);
+
 // total purchases, total sales, to receive , to give, stock value, expences etc
 
 export const subscriptions = sqliteTable("subscriptions", {
@@ -230,6 +286,17 @@ export const subscriptions = sqliteTable("subscriptions", {
   // endDate: integer("end_date"),
 });
 
+export const subscriptionsRelation = relations(subscriptions, ({ one }) => ({
+  account: one(accounts, {
+    fields: [subscriptions.accountId],
+    references: [accounts.id],
+  }),
+  subCategory: one(subCategories, {
+    fields: [subscriptions.subCategoryId],
+    references: [subCategories.id],
+  }),
+}));
+
 export const friends = sqliteTable("friends", {
   id: text("id")
     .primaryKey()
@@ -245,6 +312,17 @@ export const friends = sqliteTable("friends", {
     enum: ["accepted", "pending", "rejected"],
   }),
 });
+
+export const friendRelations = relations(friends, ({ one }) => ({
+  user: one(users, {
+    fields: [friends.userId],
+    references: [users.id],
+  }),
+  friend: one(users, {
+    fields: [friends.friendId],
+    references: [users.id],
+  }),
+}));
 
 export const notifications = sqliteTable("notifications", {
   id: integer("id").notNull().primaryKey(),
@@ -262,3 +340,10 @@ export const notifications = sqliteTable("notifications", {
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
 });
+
+export const notificationRelations = relations(notifications, ({ one }) => ({
+  user: one(users, {
+    fields: [notifications.userId],
+    references: [users.id],
+  }),
+}));

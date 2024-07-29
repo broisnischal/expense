@@ -57,10 +57,15 @@ CREATE TABLE `recurring_transactions` (
 	`frequency` text NOT NULL,
 	`start_date` integer,
 	`end_date` integer,
-	`transaction_id` text NOT NULL,
 	FOREIGN KEY (`account_id`) REFERENCES `accounts`(`id`) ON UPDATE no action ON DELETE no action,
-	FOREIGN KEY (`sub_category_id`) REFERENCES `sub_categories`(`id`) ON UPDATE no action ON DELETE no action,
-	FOREIGN KEY (`transaction_id`) REFERENCES `transactions`(`id`) ON UPDATE no action ON DELETE no action
+	FOREIGN KEY (`sub_category_id`) REFERENCES `sub_categories`(`id`) ON UPDATE no action ON DELETE no action
+);
+--> statement-breakpoint
+CREATE TABLE `sessions` (
+	`id` text PRIMARY KEY NOT NULL,
+	`user_id` text NOT NULL,
+	`expires_at` integer NOT NULL,
+	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
 CREATE TABLE `sub_categories` (
@@ -89,18 +94,46 @@ CREATE TABLE `subscriptions` (
 	FOREIGN KEY (`sub_category_id`) REFERENCES `sub_categories`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
+CREATE TABLE `transactions` (
+	`id` text PRIMARY KEY NOT NULL,
+	`account_id` text NOT NULL,
+	`sub_category_id` text NOT NULL,
+	`amount` integer NOT NULL,
+	`title` text NOT NULL,
+	`note` text,
+	`description` text,
+	FOREIGN KEY (`account_id`) REFERENCES `accounts`(`id`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`sub_category_id`) REFERENCES `sub_categories`(`id`) ON UPDATE no action ON DELETE no action
+);
+--> statement-breakpoint
 CREATE TABLE `user_sessions` (
 	`id` text PRIMARY KEY NOT NULL,
 	`session_id` text NOT NULL,
 	`user_id` text NOT NULL,
-	`device_id` text NOT NULL,
-	`last_seen` integer NOT NULL,
-	`device_type` text,
+	`device_id` text,
+	`last_seen` integer,
+	`device_type` text DEFAULT 'android',
+	`longitude` text,
+	`latitude` text,
+	`country` text,
+	`timezone` text,
+	`city` text,
+	`region` text,
 	`fcm_token` text,
-	`ip_address` text NOT NULL,
-	`user_agent` text NOT NULL,
-	`expires_at` integer NOT NULL,
+	`ip_address` text,
+	`user_agent` text,
+	`expires_at` text,
+	FOREIGN KEY (`session_id`) REFERENCES `sessions`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action
+);
+--> statement-breakpoint
+CREATE TABLE `users` (
+	`id` text PRIMARY KEY NOT NULL,
+	`name` text NOT NULL,
+	`email` text NOT NULL,
+	`password` text NOT NULL,
+	`contact` text NOT NULL,
+	`role` text DEFAULT 'user' NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE `wallets` (
@@ -113,13 +146,4 @@ CREATE TABLE `wallets` (
 	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
-DROP TABLE `account`;--> statement-breakpoint
-
-ALTER TABLE `transactions` ADD `account_id` text NOT NULL REFERENCES accounts(id);--> statement-breakpoint
-ALTER TABLE `transactions` ADD `sub_category_id` text NOT NULL REFERENCES sub_categories(id);--> statement-breakpoint
-ALTER TABLE `transactions` ADD `amount` integer NOT NULL;--> statement-breakpoint
-ALTER TABLE `transactions` ADD `title` text NOT NULL;--> statement-breakpoint
-ALTER TABLE `transactions` ADD `note` text;--> statement-breakpoint
-ALTER TABLE `transactions` ADD `description` text;--> statement-breakpoint
-
-ALTER TABLE `transactions` DROP COLUMN `text`;
+CREATE UNIQUE INDEX `users_email_unique` ON `users` (`email`);
