@@ -107,10 +107,16 @@ export const subCategories = sqliteTable("sub_categories", {
     .references(() => categories.id),
 });
 
-export const subCategoriesRelation = relations(subCategories, ({ many }) => ({
-  category: many(categories),
-  transactions: many(transactions),
-}));
+export const subCategoriesRelation = relations(
+  subCategories,
+  ({ one, many }) => ({
+    category: one(categories, {
+      fields: [subCategories.categoryId],
+      references: [categories.id],
+    }),
+    transactions: many(transactions),
+  })
+);
 
 // primary, main
 export const accounts = sqliteTable("accounts", {
