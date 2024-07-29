@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "00938667-49ad-41fb-8ebf-e0a47562c17a",
+  "id": "1125c90f-9b84-4db8-a16c-922e29f017a4",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "accounts": {
@@ -181,7 +181,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
         "debts_sub_category_id_sub_categories_id_fk": {
@@ -411,7 +411,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
         "recurring_transactions_sub_category_id_sub_categories_id_fk": {
@@ -706,7 +706,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
         "transactions_sub_category_id_sub_categories_id_fk": {
@@ -855,7 +855,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
         "user_sessions_user_id_users_id_fk": {

@@ -14,6 +14,8 @@ const categories = [
       "entertainment",
       "travelling",
       "food",
+      "feul",
+      "miscellaneous",
     ],
   },
   {

@@ -93,7 +93,7 @@ app
   // Routes
   .route("/auth", authApi)
   .route("/user", userApi)
-  .route("/expenses", expenseApi)
+  .route("/app", expenseApi)
   .onError(errorHandler);
 
 app.get("/", async (c) => {

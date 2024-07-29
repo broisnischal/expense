@@ -50,7 +50,7 @@ export const userSessions = sqliteTable("user_sessions", {
     .$defaultFn(() => generateId(15)),
   sessionId: text("session_id")
     .notNull()
-    .references(() => sessions.id),
+    .references(() => sessions.id, { onDelete: "cascade" }),
   userId: text("user_id")
     .notNull()
     .references(() => users.id),
@@ -164,7 +164,9 @@ export const transactions = sqliteTable("transactions", {
     .$defaultFn(() => generateId(15)),
   accountId: text("account_id")
     .notNull()
-    .references(() => accounts.id),
+    .references(() => accounts.id, {
+      onDelete: "cascade",
+    }),
   subCategoryId: text("sub_category_id")
     .notNull()
     .references(() => subCategories.id),
@@ -195,7 +197,9 @@ export const recurringTransactions = sqliteTable("recurring_transactions", {
   id: integer("id").notNull().primaryKey(),
   accountId: text("account_id")
     .notNull()
-    .references(() => accounts.id),
+    .references(() => accounts.id, {
+      onDelete: "cascade",
+    }),
   subCategoryId: text("sub_category_id")
     .notNull()
     .references(() => subCategories.id),
@@ -233,7 +237,9 @@ export const debts = sqliteTable("debts", {
   id: integer("id").notNull().primaryKey(),
   accountId: text("account_id")
     .notNull()
-    .references(() => accounts.id),
+    .references(() => accounts.id, {
+      onDelete: "cascade",
+    }),
   subCategoryId: text("sub_category_id")
     .notNull()
     .references(() => subCategories.id),
