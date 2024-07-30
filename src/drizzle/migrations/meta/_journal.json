@@ -15,6 +15,13 @@
       "when": 1722278626054,
       "tag": "0001_large_virginia_dare",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1722310383514,
+      "tag": "0002_giant_doctor_doom",
+      "breakpoints": true
     }
   ]
 }

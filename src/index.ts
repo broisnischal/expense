@@ -10,10 +10,10 @@ import { ipRestriction } from "hono/ip-restriction";
 import { cache } from "hono/cache";
 
 import authApi from "./api/auth";
-import {
-  type RateLimitBinding,
-  cloudflareRateLimiter,
-} from "@hono-rate-limiter/cloudflare";
+// import {
+//   type RateLimitBinding,
+//   cloudflareRateLimiter,
+// } from "@hono-rate-limiter/cloudflare";
 
 import expenseApi from "./api/expense";
 import userApi from "./api/user";
@@ -29,12 +29,10 @@ import errorHandler from "./middlewares/error.middleware";
 import { timing } from "hono/timing";
 import { timeout } from "hono/timeout";
 
-import { sentry } from "@hono/sentry";
 import { getConnInfo } from "hono/cloudflare-workers";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import { showRoutes } from "hono/dev";
-import { OpenAPIHono } from "@hono/zod-openapi";
 
 export type Bindings = {
   [key in keyof CloudflareBindings]: CloudflareBindings[key];
@@ -66,7 +64,7 @@ app
     secureHeaders({
       xFrameOptions: false,
       xXssProtection: false,
-    })
+    }),
   )
   .use(csrf({}))
   // .use(compress())
@@ -98,7 +96,6 @@ app
 
 app.get("/", async (c) => {
   let user = c.get("user");
-  console.log(user?.email);
 
   return c.text(`Expense APP - Powered by broisnees`);
 });

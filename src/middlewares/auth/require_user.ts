@@ -7,8 +7,6 @@ export async function requireUser(c: Context, next: Next) {
 
   let sessionId = getCookie(c, lucia.sessionCookieName) ?? null;
 
-  console.log("Session ID:", sessionId);
-
   if (!sessionId) {
     c.set("user", null);
     c.set("session", null);

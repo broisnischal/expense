@@ -6,7 +6,7 @@ import {
   uniqueIndex,
 } from "drizzle-orm/sqlite-core";
 import { generateId } from "lucia";
-import { Frequency, NotificationType, UserRole } from "./enum";
+import { Frequency, NotificationType, PaymentType, UserRole } from "./enum";
 
 export const users = sqliteTable("users", {
   id: text("id")
@@ -115,7 +115,7 @@ export const subCategoriesRelation = relations(
       references: [categories.id],
     }),
     transactions: many(transactions),
-  })
+  }),
 );
 
 // primary, main
@@ -132,6 +132,9 @@ export const accounts = sqliteTable("accounts", {
   currency: text("currency", {
     enum: ["usd", "eur", "npr"],
   }).default("npr"),
+  paymentType: text("payment_type", {
+    enum: PaymentType,
+  }).default("cash"),
   createdAt: text("createdAt")
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
@@ -233,7 +236,7 @@ export const recurringTransactionsRelation = relations(
       fields: [recurringTransactions.subCategoryId],
       references: [subCategories.id],
     }),
-  })
+  }),
 );
 
 // export type InsertUserSession = typeof userSessions.$inferInsert;
@@ -273,7 +276,7 @@ export const subscriptionTypesRelation = relations(
   subscriptionTypes,
   ({ many }) => ({
     subscriptions: many(subscriptions),
-  })
+  }),
 );
 
 // total purchases, total sales, to receive , to give, stock value, expences etc
