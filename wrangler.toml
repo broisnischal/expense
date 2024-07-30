@@ -31,6 +31,8 @@ database_name = "expense"
 database_id = "bde8f900-288b-469a-a82d-930a6d1b71bf"
 migrations_dir = "./src/drizzle/migrations"
 preview_database_id = "asdff"
+database_internal_env = "DB"
+migrations_table = "d1_migrations"
 
 
 # Automatically place your workloads in an optimal location to minimize latency.

@@ -33,6 +33,8 @@ import { getConnInfo } from "hono/cloudflare-workers";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import { showRoutes } from "hono/dev";
+import { drizzle } from "drizzle-orm/d1";
+import { schema } from "./drizzle";
 
 export type Bindings = {
   [key in keyof CloudflareBindings]: CloudflareBindings[key];
@@ -64,7 +66,7 @@ app
     secureHeaders({
       xFrameOptions: false,
       xXssProtection: false,
-    }),
+    })
   )
   .use(csrf({}))
   // .use(compress())
@@ -98,6 +100,54 @@ app.get("/", async (c) => {
   let user = c.get("user");
 
   return c.text(`Expense APP - Powered by broisnees`);
+});
+
+app.get("/seed", async (c) => {
+  console.log("Seeding database...");
+
+  const categories = [
+    {
+      name: "income",
+      subcategories: ["salary", "bonus", "other", "reimbursement"],
+    },
+    {
+      name: "expense",
+      subcategories: [
+        "rent",
+        "utilities",
+        "groceries",
+        "entertainment",
+        "travelling",
+        "food",
+        "feul",
+        "miscellaneous",
+      ],
+    },
+    {
+      name: "savings",
+      subcategories: ["savings"],
+    },
+  ];
+
+  const db = drizzle(c.env.DB, {
+    schema: schema,
+  });
+
+  for (const category of categories) {
+    const categoryRecord = await db
+      .insert(schema.categories)
+      .values({ name: category.name })
+      .returning();
+
+    for (const subcategory of category.subcategories) {
+      await db
+        .insert(schema.subCategories)
+        .values({ name: subcategory, categoryId: categoryRecord[0].id })
+        .returning();
+    }
+  }
+
+  return c.json({ success: true }, 200);
 });
 
 // app.notFound((c) => c.json({ message: "Route Not Found", ok: false }, 404));

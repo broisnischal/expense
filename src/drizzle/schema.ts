@@ -102,7 +102,7 @@ export const subCategories = sqliteTable("sub_categories", {
     .notNull()
     .$defaultFn(() => generateId(15)),
   name: text("name").notNull(),
-  categoryId: integer("category_id")
+  categoryId: text("category_id")
     .notNull()
     .references(() => categories.id),
 });
@@ -115,7 +115,7 @@ export const subCategoriesRelation = relations(
       references: [categories.id],
     }),
     transactions: many(transactions),
-  }),
+  })
 );
 
 // primary, main
@@ -236,7 +236,7 @@ export const recurringTransactionsRelation = relations(
       fields: [recurringTransactions.subCategoryId],
       references: [subCategories.id],
     }),
-  }),
+  })
 );
 
 // export type InsertUserSession = typeof userSessions.$inferInsert;
@@ -276,7 +276,7 @@ export const subscriptionTypesRelation = relations(
   subscriptionTypes,
   ({ many }) => ({
     subscriptions: many(subscriptions),
-  }),
+  })
 );
 
 // total purchases, total sales, to receive , to give, stock value, expences etc
