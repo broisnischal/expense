@@ -132,9 +132,6 @@ export const accounts = sqliteTable("accounts", {
   currency: text("currency", {
     enum: ["usd", "eur", "npr"],
   }).default("npr"),
-  paymentType: text("payment_type", {
-    enum: PaymentType,
-  }).default("cash"),
   createdAt: text("createdAt")
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
@@ -179,6 +176,9 @@ export const transactions = sqliteTable("transactions", {
   subCategoryId: text("sub_category_id")
     .notNull()
     .references(() => subCategories.id),
+  paymentType: text("payment_type", {
+    enum: PaymentType,
+  }).default("cash"),
   amount: integer("amount").notNull(),
   title: text("title").notNull(),
   note: text("note"),

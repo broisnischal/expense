@@ -21,7 +21,7 @@ const authApi = new Hono<Context>()
           message: "User is not authorized",
           success: false,
         },
-        401
+        401,
       );
     }
 
@@ -36,7 +36,7 @@ const authApi = new Hono<Context>()
         email: z.string().email(),
         contact: z.string().min(2).max(25),
         password: z.string().min(2).max(25),
-      })
+      }),
     ),
     async (c) => {
       const { name, email, password, contact } = c.req.valid("json");
@@ -69,7 +69,7 @@ const authApi = new Hono<Context>()
       if (!result) {
         return c.json(
           { result: "failed to create user, An error occured" },
-          500
+          500,
         );
       }
 
@@ -91,14 +91,14 @@ const authApi = new Hono<Context>()
           session: session.id,
           exp: Math.floor(Date.now() / 1000) + 60 * 5,
         },
-        c.env.ACCESS_TOKEN_SECRET
+        c.env.ACCESS_TOKEN_SECRET,
       );
 
       return c.json(
         { success: true, session, message: "signed up", accessToken },
-        201
+        201,
       );
-    }
+    },
   )
   .post(
     "/signin",
@@ -107,10 +107,10 @@ const authApi = new Hono<Context>()
       z.object({
         email: z.string().email(),
         password: z.string().min(2).max(25),
-      })
+      }),
     ),
     async (c) => {
-      const { email, password } = await c.req.valid("json");
+      const { email, password } = c.req.valid("json");
 
       const db = drizzle(c.env.DB, {
         schema: schema,
@@ -127,7 +127,7 @@ const authApi = new Hono<Context>()
 
       const isValidPassword = await new Scrypt().verify(
         user.password,
-        password
+        password,
       );
 
       if (!isValidPassword) {
@@ -171,9 +171,8 @@ const authApi = new Hono<Context>()
 
       const identifier = ip ?? "global";
 
-      const newSession = await db
-        .insert(schema.userSessions)
-        .values({
+      await db.transaction(async (tx) => {
+        await tx.insert(schema.userSessions).values({
           sessionId: session.id,
           userId: user.id,
           expiresAt: session.expiresAt.toString(),
@@ -184,17 +183,21 @@ const authApi = new Hono<Context>()
           longitude: longitude as string,
           latitude: latitude as string,
           country: country as string,
-        })
-        .returning({
-          id: schema.userSessions.id,
         });
 
-      if (!newSession) {
-        return c.json({ result: "failed to create session" }, 500);
-      }
+        await tx.insert(schema.accounts).values({
+          name: "default",
+          userId: user.id,
+        });
+
+        await tx.insert(schema.wallets).values({
+          name: "primary",
+          userId: user.id,
+        });
+      });
 
       return c.json({ success: true, message: "signed in", ...session }, 200);
-    }
+    },
   )
   .post("/signout", async (c) => {
     let lucia = initializeLucia(c.env.DB);

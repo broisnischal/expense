@@ -22,3 +22,5 @@ export const NotificationType = [
 export const UserRole = ["user", "admin", "super_admin"] as const;
 
 export const PaymentType = ["cash", "card", "check"] as const;
+
+export const CategoryType = ["income", "expense"] as const;
