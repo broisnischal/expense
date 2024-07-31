@@ -60,7 +60,7 @@ app
   //     cacheControl: "max-age=3600",
   //   })
   // )
-  .use("*", timeout(5000))
+  // .use("*", timeout(5000))
   .use(
     "*",
     secureHeaders({

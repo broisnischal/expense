@@ -21,7 +21,7 @@ const authApi = new Hono<Context>()
           message: "User is not authorized",
           success: false,
         },
-        401,
+        401
       );
     }
 
@@ -36,7 +36,7 @@ const authApi = new Hono<Context>()
         email: z.string().email(),
         contact: z.string().min(2).max(25),
         password: z.string().min(2).max(25),
-      }),
+      })
     ),
     async (c) => {
       const { name, email, password, contact } = c.req.valid("json");
@@ -69,7 +69,7 @@ const authApi = new Hono<Context>()
       if (!result) {
         return c.json(
           { result: "failed to create user, An error occured" },
-          500,
+          500
         );
       }
 
@@ -91,14 +91,55 @@ const authApi = new Hono<Context>()
           session: session.id,
           exp: Math.floor(Date.now() / 1000) + 60 * 5,
         },
-        c.env.ACCESS_TOKEN_SECRET,
+        c.env.ACCESS_TOKEN_SECRET
       );
+
+      const {
+        city,
+        longitude,
+        latitude,
+        country,
+        postalCode,
+        timezone,
+        colo,
+        region,
+        regionCode,
+      } = c.req.raw.cf!;
+
+      const ip = c.req.header("X-Forwarded-For") ?? c.req.header("x-real-ip");
+
+      const identifier = ip ?? "global";
+
+      await db.transaction(async (tx) => {
+        await tx.insert(schema.userSessions).values({
+          sessionId: session.id,
+          userId: session.userId,
+          expiresAt: session.expiresAt.toString(),
+          ipAddress: identifier,
+          timezone: timezone as string,
+          region: region as string,
+          city: city as string,
+          longitude: longitude as string,
+          latitude: latitude as string,
+          country: country as string,
+        });
+
+        await tx.insert(schema.accounts).values({
+          name: "default",
+          userId: session.userId,
+        });
+
+        await tx.insert(schema.wallets).values({
+          name: "primary",
+          userId: session.userId,
+        });
+      });
 
       return c.json(
         { success: true, session, message: "signed up", accessToken },
-        201,
+        201
       );
-    },
+    }
   )
   .post(
     "/signin",
@@ -107,7 +148,7 @@ const authApi = new Hono<Context>()
       z.object({
         email: z.string().email(),
         password: z.string().min(2).max(25),
-      }),
+      })
     ),
     async (c) => {
       const { email, password } = c.req.valid("json");
@@ -127,7 +168,7 @@ const authApi = new Hono<Context>()
 
       const isValidPassword = await new Scrypt().verify(
         user.password,
-        password,
+        password
       );
 
       if (!isValidPassword) {
@@ -155,49 +196,8 @@ const authApi = new Hono<Context>()
 
       // const ip = c.req.raw.headers.get("CF-Connecting-IP");
 
-      const {
-        city,
-        longitude,
-        latitude,
-        country,
-        postalCode,
-        timezone,
-        colo,
-        region,
-        regionCode,
-      } = c.req.raw.cf!;
-
-      const ip = c.req.header("X-Forwarded-For") ?? c.req.header("x-real-ip");
-
-      const identifier = ip ?? "global";
-
-      await db.transaction(async (tx) => {
-        await tx.insert(schema.userSessions).values({
-          sessionId: session.id,
-          userId: user.id,
-          expiresAt: session.expiresAt.toString(),
-          ipAddress: identifier,
-          timezone: timezone as string,
-          region: region as string,
-          city: city as string,
-          longitude: longitude as string,
-          latitude: latitude as string,
-          country: country as string,
-        });
-
-        await tx.insert(schema.accounts).values({
-          name: "default",
-          userId: user.id,
-        });
-
-        await tx.insert(schema.wallets).values({
-          name: "primary",
-          userId: user.id,
-        });
-      });
-
       return c.json({ success: true, message: "signed in", ...session }, 200);
-    },
+    }
   )
   .post("/signout", async (c) => {
     let lucia = initializeLucia(c.env.DB);
