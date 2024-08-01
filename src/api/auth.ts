@@ -110,29 +110,27 @@ const authApi = new Hono<Context>()
 
       const identifier = ip ?? "global";
 
-      await db.transaction(async (tx) => {
-        await tx.insert(schema.userSessions).values({
-          sessionId: session.id,
-          userId: session.userId,
-          expiresAt: session.expiresAt.toString(),
-          ipAddress: identifier,
-          timezone: timezone as string,
-          region: region as string,
-          city: city as string,
-          longitude: longitude as string,
-          latitude: latitude as string,
-          country: country as string,
-        });
+      await db.insert(schema.userSessions).values({
+        sessionId: session.id,
+        userId: session.userId,
+        expiresAt: session.expiresAt.toString(),
+        ipAddress: identifier,
+        timezone: timezone as string,
+        region: region as string,
+        city: city as string,
+        longitude: longitude as string,
+        latitude: latitude as string,
+        country: country as string,
+      });
 
-        await tx.insert(schema.accounts).values({
-          name: "default",
-          userId: session.userId,
-        });
+      await db.insert(schema.accounts).values({
+        name: "default",
+        userId: session.userId,
+      });
 
-        await tx.insert(schema.wallets).values({
-          name: "primary",
-          userId: session.userId,
-        });
+      await db.insert(schema.wallets).values({
+        name: "primary",
+        userId: session.userId,
       });
 
       return c.json(
