@@ -1,6 +1,6 @@
 import { D1Adapter } from "@lucia-auth/adapter-sqlite";
 import { Lucia } from "lucia";
-import { SelectUser } from "./schema";
+import { SelectUser } from "./schema/user";
 
 export function initializeLucia(D1: D1Database) {
   const adapter = new D1Adapter(D1, {
