@@ -1,1 +1,0 @@
-ALTER TABLE `accounts` ADD `payment_type` text DEFAULT 'cash';

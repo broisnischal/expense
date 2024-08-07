@@ -5,7 +5,7 @@ export default defineConfig({
   introspect: {
     casing: "camel",
   },
-  schema: "./src/drizzle/schema.ts",
+  schema: "./src/drizzle/schema",
   dialect: "sqlite",
   verbose: true,
   out: "./src/drizzle/migrations",
