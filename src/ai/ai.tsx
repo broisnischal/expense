@@ -75,7 +75,7 @@
 //     cache: false,
 //   });
 
-//   const embeddings = await c.env.AI.run("@cf/baai/bge-large-en-v1.5", {
+//   const embeddings = await c.env.AI.run("@cf/-large-en-v1.5", {
 //     text: question,
 //   });
 
