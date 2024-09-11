@@ -8,9 +8,8 @@ const transactionUuid = uuidv4();
 // const transactionUuid = '11-201-13'
 console.log(transactionUuid);
 
-const amount = 1000;
-const secret = '8gBm/:&EnhH.1/q';
-
+const amount = 100;
+const secret = String('8gBm/:&EnhH.1/q');
 
 const signedFields = 'total_amount,transaction_uuid,product_code';
 const message = `total_amount=${amount},transaction_uuid=${transactionUuid},product_code=EPAYTEST`;

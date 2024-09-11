@@ -58,22 +58,39 @@ const khalti = new Hono<Context>().post('/webhook', async (c) => {
     }
 
     let data = {
-        "pidx": token,
-        // "amount": 1300
+        "token": token,
+        "amount": 1300
     };
 
     let config = {
-        headers: { 'Authorization': 'Key 67c1dcfe1c0a4b8db531c3f09a019cb3' },
-        'Content-Type': 'application/json'
+        headers: { 'Authorization': 'Key 67c1dcfe1c0a4b8db531c3f09a019cb3' }
     };
 
-    const response = await axios.post("https://a.khalti.com/api/v2/epayment/lookup/", data, config)
+    const response = await axios.post("https://a.khalti.com/api/v2/payment/verify/", data, config)
         .then(response => {
             console.log(response.data);
         })
         .catch(error => {
-            console.log(error);
+            console.log(error.response.data);
         });
+
+    // let data = {
+    //     "pidx": token,
+    //     // "amount": 1300
+    // };
+
+    // let config = {
+    //     headers: { 'Authorization': 'Key 67c1dcfe1c0a4b8db531c3f09a019cb3' },
+    //     'Content-Type': 'application/json'
+    // };
+
+    // const response = await axios.post("https://a.khalti.com/api/v2/epayment/lookup/", data, config)
+    //     .then(response => {
+    //         console.log(response.data);
+    //     })
+    //     .catch(error => {
+    //         console.log(error);
+    //     });
 
     return c.json({ result: response });
 });
