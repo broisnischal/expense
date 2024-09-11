@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { Context } from "../context";
 import axios from "axios"
 import { requireUser } from "../middlewares/auth/require_user";
-
+import crypto from 'crypto';
 
 // .use(requireUser)
 const esewa = new Hono<Context>().post('/webhook', async (c) => {
@@ -10,44 +10,30 @@ const esewa = new Hono<Context>().post('/webhook', async (c) => {
 
 
     return c.json({ result: 'Payment done' });
+}).get('/signature', async (c) => {
+
+    const message = c.req.query('message');
+
+    if (!message) {
+        return c.json({ result: 'Missing message' });
+    }
+
+    const secret = 'secret';
+
+    const hmac = crypto.createHmac('sha256', secret);
+    hmac.update(message);
+    const hashInBase64 = hmac.digest('base64');
+
+
+    return c.json({ result: hashInBase64 });
+
+
 }).get("/", async (c) => {
 
     // const { payment } = c.env;
 
-    const options = {
-        method: 'POST',
-        url: 'https://a.khalti.com/api/v2/epayment/initiate/',
-        headers: {
-            Authorization: 'key 67c1dcfe1c0a4b8db531c3f09a019cb3',
-            'Content-Type': 'application/json'
-        },
-        data: {
-            return_url: 'http://localhost:8787/payment/verify',
-            website_url: 'http://localhost:8787',
-            amount: '1300',
-            purchase_order_id: 'Order01',
-            purchase_order_name: 'test',
-            customer_info: {
-                name: 'Testing Payment',
-                email: 'test@khalti.com',
-                phone: '9800000001'
-            },
-            "product_details": [
-                {
-                    "identity": "1234567890",
-                    "name": "Khalti logo",
-                    "total_price": 1300,
-                    "quantity": 1,
-                    "unit_price": 1300
-                }
-            ],
-            merchant_name: 'Nischal'
-        }
-    };
 
-    const response = await axios.request(options);
-
-    return c.json({ result: response.data });
+    return c.json({ result: "esewa" });
 }).get('/verify', async (c) => {
 
     const token = c.req.query('token');
@@ -79,3 +65,5 @@ const esewa = new Hono<Context>().post('/webhook', async (c) => {
 });
 
 export default esewa;
+
+
