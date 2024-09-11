@@ -66,7 +66,7 @@
             <input type="hidden" id="product_code" name="product_code" value="EPAYTEST">
             <input type="hidden" id="product_service_charge" name="product_service_charge" value="0">
             <input type="hidden" id="product_delivery_charge" name="product_delivery_charge" value="0">
-            <input type="hidden" id="success_url" name="success_url" value="http://localhost:8787/payment/verify">
+            <input type="hidden" id="success_url" name="success_url" value="http://localhost:8787/esewa/verify">
             <input type="hidden" id="failure_url" name="failure_url" value="http://localhost:8787/payment/failed">
             <input type="hidden" id="signed_field_names" name="signed_field_names"
                 value="total_amount,transaction_uuid,product_code">
@@ -78,8 +78,8 @@
         // You'll need to implement this function to generate the UUID and signature
         function generateTransactionDetails() {
             // This is a placeholder. In a real scenario, you'd generate these server-side
-            document.getElementById('transaction_uuid').value = '1ac47919-230b-46bc-9472-783e2a6e4993';
-            document.getElementById('signature').value = 'cut+L36Y2rUj/8SI1jz+v7Nca2oIeuuRQvvQtm+GrwI=';
+            document.getElementById('transaction_uuid').value = 'b7d632ca-d696-4b68-b4b0-55293a700dc9';
+            document.getElementById('signature').value = 'hlzuP4Wbr4htzZGLh7MjTBhF2XdraumvpmSUuuFfaNA=';
         }
         generateTransactionDetails();
     </script>

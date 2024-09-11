@@ -3,6 +3,10 @@ import { Context } from "../context";
 import axios from "axios"
 import { requireUser } from "../middlewares/auth/require_user";
 import crypto from 'crypto';
+import CryptoJS from "crypto-js";
+
+export const secret = "8gBm/:&EnhH.1/q";
+
 
 // .use(requireUser)
 const esewa = new Hono<Context>().post('/webhook', async (c) => {
@@ -36,32 +40,42 @@ const esewa = new Hono<Context>().post('/webhook', async (c) => {
     return c.json({ result: "esewa" });
 }).get('/verify', async (c) => {
 
-    const token = c.req.query('token');
-    const amount = c.req.query('amount');
+
+    const token = c.req.query('data');
 
     if (!token) {
-        return c.json({ result: 'Missing token or amount' });
+        return c.json({ result: 'Missing token' });
     }
 
-    let data = {
-        "pidx": token,
-        // "amount": 1300
-    };
 
-    let config = {
-        headers: { 'Authorization': 'Key 67c1dcfe1c0a4b8db531c3f09a019cb3' },
-        'Content-Type': 'application/json'
-    };
+    const decodedData = Buffer.from(token, 'base64').toString('utf-8');
 
-    const response = await axios.post("https://a.khalti.com/api/v2/epayment/lookup/", data, config)
-        .then(response => {
-            console.log(response.data);
-        })
-        .catch(error => {
-            console.log(error);
-        });
+    const data = JSON.parse(decodedData);
 
-    return c.json({ result: response });
+    console.log(data);
+    console.log("data")
+
+    const signedfieldnames = data.signed_field_names.split(',');
+
+    console.log(signedfieldnames);
+
+    const message = signedfieldnames.map((field: string) => `${field}=${data[field]}`).join(',');
+
+    console.log(message);
+
+    const hmac = CryptoJS.HmacSHA256(message, secret);
+
+    const signature = CryptoJS.enc.Base64.stringify(hmac);
+
+    if (signature === data.signature) {
+        // TODO: update the payment status to success
+        // TODO: update the payment details to the database
+
+        return c.json({ result: 'Signature is valid' });
+    } else {
+        return c.json({ result: 'Signature is invalid' });
+    }
+
 });
 
 export default esewa;

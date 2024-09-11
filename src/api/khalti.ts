@@ -54,8 +54,6 @@ const khalti = new Hono<Context>().post('/webhook', async (c) => {
     return c.json({ result: response.data });
 }).get('/verify', async (c) => {
 
-    // pidx=QYd74SCVWpPTEgyXs982QW&transaction_id=P5qt5qp4vHUX5UxG5ZhDPi&tidx=P5qt5qp4vHUX5UxG5ZhDPi&amount=1000&total_amount=1000&mobile=98XXXXX003&status=Completed&purchase_order_id=Ordwer01&purchase_order_name=Test
-
 
     const pidx = c.req.query('pidx');
     const transaction_id = c.req.query('transaction_id');
