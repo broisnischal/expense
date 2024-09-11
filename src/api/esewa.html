@@ -1,27 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Esewa</title>
-</head>
-<body>
-    <h1>Esewa Payment</h1>
+    <title>eSewa Payment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
 
-    <form action="https://rc-epay.esewa.com.np/api/epay/main/v2/form" method="POST">
-        <input type="text" id="amount" name="amount" value="100" required>
-        <input type="text" id="tax_amount" name="tax_amount" value ="10" required>
-        <input type="text" id="total_amount" name="total_amount" value="110" required>
-        <input type="text" id="transaction_uuid" name="transaction_uuid"required>
-        <input type="text" id="product_code" name="product_code" value ="EPAYTEST" required>
-        <input type="text" id="product_service_charge" name="product_service_charge" value="0" required>
-        <input type="text" id="product_delivery_charge" name="product_delivery_charge" value="0" required>
-        <input type="text" id="success_url" name="success_url" value="https://esewa.com.np" required>
-        <input type="text" id="failure_url" name="failure_url" value="https://google.com" required>
-        <input type="text" id="signed_field_names" name="signed_field_names" value="total_amount,transaction_uuid,product_code" required>
-        <input type="text" id="signature" name="signature" required>
-        <input value="Submit" type="submit">
-    </form>
-  
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #4CAF50;
+            margin-bottom: 1rem;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        input[type="text"],
+        input[type="submit"] {
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>eSewa Payment</h1>
+        <form action="https://rc-epay.esewa.com.np/api/epay/main/v2/form" method="POST">
+            <input type="hidden" id="amount" name="amount" value="100">
+            <input type="hidden" id="tax_amount" name="tax_amount" value="10">
+            <input type="text" id="total_amount" name="total_amount" value="110" readonly>
+            <input type="hidden" id="transaction_uuid" name="transaction_uuid">
+            <input type="hidden" id="product_code" name="product_code" value="EPAYTEST">
+            <input type="hidden" id="product_service_charge" name="product_service_charge" value="0">
+            <input type="hidden" id="product_delivery_charge" name="product_delivery_charge" value="0">
+            <input type="hidden" id="success_url" name="success_url" value="http://localhost:8787/payment/verify">
+            <input type="hidden" id="failure_url" name="failure_url" value="http://localhost:8787/payment/failed">
+            <input type="hidden" id="signed_field_names" name="signed_field_names"
+                value="total_amount,transaction_uuid,product_code">
+            <input type="hidden" id="signature" name="signature">
+            <input value="Pay with eSewa" type="submit">
+        </form>
+    </div>
+    <script>
+        // You'll need to implement this function to generate the UUID and signature
+        function generateTransactionDetails() {
+            // This is a placeholder. In a real scenario, you'd generate these server-side
+            document.getElementById('transaction_uuid').value = '1ac47919-230b-46bc-9472-783e2a6e4993';
+            document.getElementById('signature').value = 'cut+L36Y2rUj/8SI1jz+v7Nca2oIeuuRQvvQtm+GrwI=';
+        }
+        generateTransactionDetails();
+    </script>
 </body>
+
 </html>
