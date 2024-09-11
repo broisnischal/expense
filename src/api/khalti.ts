@@ -4,6 +4,7 @@ import axios from "axios"
 import { requireUser } from "../middlewares/auth/require_user";
 
 const secret_key = "Key 05bf95cc57244045b8df5fad06748dab";
+
 const public_key = "Key bfb18416701243fa868a13e94e039cc4";
 
 
@@ -25,6 +26,8 @@ const khalti = new Hono<Context>().post('/webhook', async (c) => {
 
     return c.json({ result: 'Payment done' });
 }).get("/", async (c) => {
+    const url = "https://api.nischal-dahal.com.np/";
+
 
     // const { payment } = c.env;
 
@@ -36,8 +39,8 @@ const khalti = new Hono<Context>().post('/webhook', async (c) => {
             'Content-Type': 'application/json'
         },
         data: {
-            "return_url": "http://localhost:8787/khalti/verify",
-            "website_url": "http://localhost:8787",
+            "return_url": `${url}/khalti/verify`,
+            "website_url": url,
             "amount": 1000,
             "purchase_order_id": "Ordwer01",
             "purchase_order_name": "Test",

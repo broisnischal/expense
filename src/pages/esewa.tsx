@@ -3,6 +3,8 @@ import { v4 as uuidv4 } from "uuid";
 import { createSignature } from "../utils";
 
 export default function Esewa() {
+  const url = "https://api.nischal-dahal.com.np/";
+
   const transactionUuid = uuidv4();
   const signature = createSignature({
     amount: 100,
@@ -132,7 +134,7 @@ export default function Esewa() {
             <input
               id="success_url"
               name="success_url"
-              value="http://localhost:8787/esewa/verify"
+              value={`${url}/esewa/verify`}
               readOnly
               className="border rounded px-3 py-2 bg-gray-100"
             />
@@ -144,7 +146,7 @@ export default function Esewa() {
             <input
               id="failure_url"
               name="failure_url"
-              value="http://localhost:8787/esewa/verify"
+              value={`${url}/esewa/verify`}
               readOnly
               className="border rounded px-3 py-2 bg-gray-100"
             />
