@@ -35,6 +35,8 @@ import { Redis } from "@upstash/redis";
 import { showRoutes } from "hono/dev";
 import { drizzle } from "drizzle-orm/d1";
 import { schema } from "./drizzle";
+import khalti from "./api/khalti";
+import esewa from "./api/esewa";
 
 export type Bindings = {
   [key in keyof CloudflareBindings]: CloudflareBindings[key];
@@ -94,6 +96,8 @@ app
   .route("/auth", authApi)
   .route("/user", userApi)
   .route("/app", expenseApi)
+  .route('/khalti', khalti)
+  .route('/esewa', esewa)
   .onError(errorHandler);
 
 app.get("/", async (c) => {

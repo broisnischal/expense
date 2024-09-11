@@ -118,7 +118,7 @@ const authApi = new Hono<Context>()
         timezone: timezone as string,
         region: region as string,
         city: city as string,
-        longitude: longitude as string,
+        longitude: longitude,
         latitude: latitude as string,
         country: country as string,
       });

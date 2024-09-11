@@ -29,3 +29,9 @@ Power recommendation engines with fresh, relevant suggestions at low-latency, an
 
 Document search
 Make it easier to discover and retrieve information across documents and knowledge bases, using natural language and semantic search.
+
+
+eSewa ID: 9806800001/2/3/4/5
+Password: Nepal@123 MPIN: 1122 (for application only)
+Token:123456
+
