@@ -4,7 +4,7 @@ import { Context } from "../context";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { drizzle } from "drizzle-orm/d1";
-import { schema } from "../drizzle";
+import schema from "../drizzle/index";
 import { eq } from "drizzle-orm";
 import { Lucia, Scrypt } from "lucia";
 import { initializeLucia } from "../drizzle/lucia";

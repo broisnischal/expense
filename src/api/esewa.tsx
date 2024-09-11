@@ -8,7 +8,9 @@ import { html } from "hono/html";
 import ESewa from "../pages/esewa";
 import qs from "qs";
 
+import schema from "../drizzle";
 import CryptoJS from "crypto-js";
+import { drizzle } from "drizzle-orm/d1";
 
 export const secret = "8gBm/:&EnhH.1/q";
 
@@ -39,6 +41,14 @@ const esewa = new Hono<Context>()
     // verify the payment from the payment/success | payment/redirect route
 
     return c.json({ result: "Payment done" });
+  })
+  .get("/products", async (c) => {
+    const db = drizzle(c.env.DB);
+    const products = await db.select().from(schema.products).all();
+
+    // await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    return c.json(products);
   })
   .get("/signature", async (c) => {
     const message = c.req.query("message");
@@ -130,7 +140,9 @@ const esewa = new Hono<Context>()
       // TODO: update the payment status to success
       // TODO: update the payment details to the database
 
-      return c.json({ result: "Signature is valid" });
+      return c.json({
+        result: `Payment with transaction_id ${data.transaction_uuid} is ${data.status}`,
+      });
     } else {
       return c.json({ result: "Signature is invalid" });
     }

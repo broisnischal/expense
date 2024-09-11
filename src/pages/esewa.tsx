@@ -15,6 +15,18 @@ export default function Esewa() {
       <div className="flex justify-center items-center flex-col w-full min-h-screen">
         <br />
         <h1 className="text-2xl font-bold mb-6">Payment With Esewa</h1>
+
+        {/* <div
+          id="content"
+          hx-get="/esewa/products"
+          hx-trigger="load, every 30s"
+          hx-target="#content"
+          hx-swap="outerHTML"
+          hx-indicator=".spinner"
+        >
+          <p>Loading...</p>
+        </div> */}
+
         <form
           className="flex flex-col gap-4 w-full max-w-md"
           action="https://rc-epay.esewa.com.np/api/epay/main/v2/form"
@@ -71,7 +83,7 @@ export default function Esewa() {
               className="border rounded px-3 py-2 bg-gray-100"
             />
           </div>
-          <div className="flex flex-col">
+          <div className="flex hidden flex-col">
             <label htmlFor="product_code" className="text-sm font-medium mb-1">
               Product Code
             </label>
@@ -83,7 +95,7 @@ export default function Esewa() {
               className="border rounded px-3 py-2 bg-gray-100"
             />
           </div>
-          <div className="flex flex-col">
+          <div className=" hidden flex-col">
             <label
               htmlFor="product_service_charge"
               className="text-sm font-medium mb-1"
@@ -98,7 +110,7 @@ export default function Esewa() {
               className="border rounded px-3 py-2 bg-gray-100"
             />
           </div>
-          <div className="flex flex-col">
+          <div className="hidden flex flex-col">
             <label
               htmlFor="product_delivery_charge"
               className="text-sm font-medium mb-1"
@@ -132,7 +144,7 @@ export default function Esewa() {
             <input
               id="failure_url"
               name="failure_url"
-              value="http://localhost:8787/esewa/failed"
+              value="http://localhost:8787/esewa/verify"
               readOnly
               className="border rounded px-3 py-2 bg-gray-100"
             />
@@ -174,6 +186,7 @@ export default function Esewa() {
           <div id="result"></div>
         </form>
       </div>
+      <script type="text/template" id="product-template"></script>
     </Layout>
   );
 }
