@@ -3,37 +3,15 @@ import { Context } from "../context";
 import axios from "axios";
 import { requireUser } from "../middlewares/auth/require_user";
 import crypto from "crypto";
-import { jsxRenderer, useRequestContext } from "hono/jsx-renderer";
-import { html } from "hono/html";
 import ESewa from "../pages/esewa";
 import qs from "qs";
 
 import schema from "../drizzle";
 import CryptoJS from "crypto-js";
 import { drizzle } from "drizzle-orm/d1";
+import Layout from "../components/layout";
 
 export const secret = "8gBm/:&EnhH.1/q";
-
-export const renderer = jsxRenderer(({ children }) => {
-  return html`
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <script src="https://unpkg.com/htmx.org@1.9.3"></script>
-        <script src="https://unpkg.com/hyperscript.org@0.9.9"></script>
-        <script src="https://cdn.tailwindcss.com"></script>
-        <title>Hono + htmx</title>
-      </head>
-      <body>
-        <div class="p-4">
-          <h1 class="text-4xl font-bold mb-4"><a href="/">Todo</a></h1>
-          ${children}
-        </div>
-      </body>
-    </html>
-  `;
-});
 
 // .use(requireUser)
 const esewa = new Hono<Context>()
@@ -50,23 +28,20 @@ const esewa = new Hono<Context>()
 
     return c.json(products);
   })
-  .get("/signature", async (c) => {
-    const message = c.req.query("message");
+  .get("/failure", (c) =>
+    c.html(
+      <Layout>
+        <h1>Payment Failed</h1>
+        <br />
+        <p>Please try again</p>
+      </Layout>
+    )
+  )
+  .get("/", async (c) => {
+    const db = drizzle(c.env.DB);
+    const [products] = await db.select().from(schema.products).limit(1);
 
-    if (!message) {
-      return c.json({ result: "Missing message" });
-    }
-
-    const secret = "secret";
-
-    const hmac = crypto.createHmac("sha256", secret);
-    hmac.update(message);
-    const hashInBase64 = hmac.digest("base64");
-
-    return c.json({ result: hashInBase64 });
-  })
-  .get("/", (c) => {
-    return c.html(<ESewa />);
+    return c.html(<ESewa products={products} />);
   })
   .post("/pay", async (c) => {
     const value = await c.req.parseBody();
@@ -139,10 +114,26 @@ const esewa = new Hono<Context>()
     if (signature === data.signature) {
       // TODO: update the payment status to success
       // TODO: update the payment details to the database
+      // return c.json({
+      //   result: `Payment with transaction_id ${data.transaction_uuid} is ${data.status}`,
+      // });
+      // return c.redirect("/payment/success");
 
-      return c.json({
-        result: `Payment with transaction_id ${data.transaction_uuid} is ${data.status}`,
-      });
+      return c.html(
+        <Layout>
+          <div
+            class={
+              "flex justify-center items-center flex-col w-full min-h-screen"
+            }
+          >
+            <h1 class={"text-2xl font-bold mb-6 text-green-500"}>
+              Payment Success
+            </h1>
+            <span>Transaction id is {data.transaction_uuid}</span>
+            <span>Status {data.status}</span>
+          </div>
+        </Layout>
+      );
     } else {
       return c.json({ result: "Signature is invalid" });
     }

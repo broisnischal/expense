@@ -1,13 +1,15 @@
 import Layout from "../components/layout";
 import { v4 as uuidv4 } from "uuid";
 import { createSignature } from "../utils";
+import { ProductType } from "../drizzle/schema/product";
 
-export default function Esewa() {
-  const url = "https://api.nischal-dahal.com.np/";
+export default function Esewa({ products }: { products: ProductType }) {
+  const url = "https://api.nischal-dahal.com.np";
 
   const transactionUuid = uuidv4();
   const signature = createSignature({
-    amount: 100,
+    amount: products.price,
+    tax_amount: Math.floor(products.price * 0.1),
     transaction_uuid: transactionUuid,
     product_code: "EPAYTEST",
   });
@@ -16,25 +18,20 @@ export default function Esewa() {
     <Layout>
       <div className="flex justify-center items-center flex-col w-full min-h-screen">
         <br />
-        <h1 className="text-2xl font-bold mb-6">Payment With Esewa</h1>
-
-        {/* <div
-          id="content"
-          hx-get="/esewa/products"
-          hx-trigger="load, every 30s"
-          hx-target="#content"
-          hx-swap="outerHTML"
-          hx-indicator=".spinner"
-        >
-          <p>Loading...</p>
-        </div> */}
+        <h1 className="text-2xl font-bold mb-6 text-green-500">
+          Payment With Esewa
+        </h1>
 
         <form
           className="flex flex-col gap-4 w-full max-w-md"
           action="https://rc-epay.esewa.com.np/api/epay/main/v2/form"
           method="post"
         >
-          <div className="flex flex-col">
+          <div className="flex gap-4">
+            <label htmlFor="product-name">Name</label>
+            <h1 id="product-name">{products.name}</h1>
+          </div>
+          <div className=" flex flex-col">
             <label
               htmlFor="transaction_uuid"
               className="text-sm font-medium mb-1"
@@ -56,7 +53,7 @@ export default function Esewa() {
             <input
               id="amount"
               name="amount"
-              value={100}
+              value={products.price}
               readOnly
               className="border rounded px-3 py-2 bg-gray-100"
             />
@@ -146,7 +143,7 @@ export default function Esewa() {
             <input
               id="failure_url"
               name="failure_url"
-              value={`${url}/esewa/verify`}
+              value={`${url}/esewa/failure`}
               readOnly
               className="border rounded px-3 py-2 bg-gray-100"
             />

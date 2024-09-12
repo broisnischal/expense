@@ -26,7 +26,7 @@ const khalti = new Hono<Context>().post('/webhook', async (c) => {
 
     return c.json({ result: 'Payment done' });
 }).get("/", async (c) => {
-    const url = "https://api.nischal-dahal.com.np/";
+    const url = "https://api.nischal-dahal.com.np";
 
 
     // const { payment } = c.env;
