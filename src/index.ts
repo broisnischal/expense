@@ -97,8 +97,8 @@ app
   .route("/auth", authApi)
   .route("/user", userApi)
   .route("/app", expenseApi)
-  .route('/khalti', khalti)
-  .route('/esewa', esewa)
+  .route("/khalti", khalti)
+  .route("/esewa", esewa)
   .onError(errorHandler);
 
 app.get("/", async (c) => {
@@ -136,7 +136,7 @@ app.get("/seed", async (c) => {
 
   const products: ProductInsertType[] = [
     {
-      name: "Product 1",
+      name: "Nischal Macbook Pro",
       price: 100,
       currency: "npr",
     },
@@ -170,7 +170,10 @@ app.get("/seed", async (c) => {
   //   }
   // }
 
-  const productRecords = await db.insert(schema.products).values(products).returning();
+  const productRecords = await db
+    .insert(schema.products)
+    .values(products)
+    .returning();
 
   return c.json({ success: true, products: productRecords }, 200);
 });

@@ -65,7 +65,7 @@ export default function Esewa({ products }: { products: ProductType }) {
             <input
               id="tax_amount"
               name="tax_amount"
-              value={10}
+              value={Math.floor(products.price * 0.1)}
               readOnly
               className="border rounded px-3 py-2 bg-gray-100"
             />
