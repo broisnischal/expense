@@ -4,6 +4,8 @@ import axios from "axios";
 import { requireUser } from "../middlewares/auth/require_user";
 import Layout from "../components/layout";
 import Khalti from "../pages/khalti";
+import { drizzle } from "drizzle-orm/d1";
+import schema from "../drizzle";
 
 const secret_key = "Key 05bf95cc57244045b8df5fad06748dab";
 
@@ -51,7 +53,11 @@ const khalti = new Hono<Context>()
   .get("/", async (c) => {
     const url = "https://api.nischal-dahal.com.np";
 
-    // const { payment } = c.env;
+    const db = drizzle(c.env.DB);
+
+    const [p1] = await db.select().from(schema.products);
+
+    const amount_in_paisa = p1.price * 100;
 
     const options = {
       method: "POST",
@@ -63,12 +69,12 @@ const khalti = new Hono<Context>()
       data: {
         return_url: `${url}/khalti/verify`,
         website_url: url,
-        amount: 1000,
+        amount: amount_in_paisa,
         purchase_order_id: "Ordwer01",
-        purchase_order_name: "Test",
+        purchase_order_name: p1.name,
         customer_info: {
-          name: "Test Bahadur",
-          email: "test@khalti.com",
+          name: "Nischal Dahal",
+          email: "ping@nischal.pro",
           phone: "9800000001",
         },
       },
@@ -87,6 +93,7 @@ const khalti = new Hono<Context>()
   })
   .get("/verify", async (c) => {
     const pidx = c.req.query("pidx");
+
     const transaction_id = c.req.query("transaction_id");
     const tidx = c.req.query("tidx");
     const amount = c.req.query("amount");
@@ -94,6 +101,8 @@ const khalti = new Hono<Context>()
     const mobile = c.req.query("mobile");
     const status = c.req.query("status");
     const purchase_order_id = c.req.query("purchase_order_id");
+
+    // demo for getting all useful parameter so that you can save in db
 
     const lookup = await axios.post<KhaltiPaymentResponse>(
       "https://a.khalti.com/api/v2/epayment/lookup/",
