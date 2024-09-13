@@ -6,9 +6,9 @@
 
 // app.post("/notes", async (c) => {
 //   const index = new Index<Metadata>({
-//     url: "https://brief-grizzly-19113-us1-vector.upstash.io",
+//     url: "https://huhu.upstash.io",
 //     token:
-//       "ABcFMGJyaWVmLWdyaXp6bHktMTkxMTMtdXMxYWRtaW5aRE14T0RnMk9ETXROalUwTVMwMFkyUmtMV0V6TWprdFpUVTRORFExWkRrMk1HRXc=",
+//       "hahahahahaa",
 //     cache: false,
 //   });
 
