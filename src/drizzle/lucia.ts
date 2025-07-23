@@ -11,8 +11,8 @@ export function initializeLucia(D1: D1Database) {
   return new Lucia(adapter, {
     sessionCookie: {
       attributes: {
-        secure: process.env.NODE_ENV === "production",
-        domain: process.env.DOMAIN || undefined,
+        // secure: ,
+        // domain: process.env.DOMAIN || undefined,
         sameSite: "lax",
         path: "/",
       },

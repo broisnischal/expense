@@ -1,0 +1,18 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "expense",
+  "compatibility_date": "2025-04-04",
+  "main": "./src/index.ts",
+  "vars": {
+    "VALUE_FROM_CLOUDFLARE": "Hello from Cloudflare"
+  },
+  "compatibility_flags": ["nodejs_compat"],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "bro-stack",
+      "database_id": "96e68e38-f859-492e-812b-8493efd051e0",
+      "migrations_dir": "drizzle"
+    }
+  ]
+}

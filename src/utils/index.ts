@@ -1,4 +1,5 @@
 import CryptoJS from "crypto-js";
+import crypto from "node:crypto";
 
 export const createSignature = (data: {
   amount: number;
@@ -16,4 +17,9 @@ export const createSignature = (data: {
   const hmac = CryptoJS.HmacSHA256(message, secret);
   const signature = CryptoJS.enc.Base64.stringify(hmac);
   return signature;
+};
+
+export const generateHMAC512 = (value: string, secret: string) => {
+  const hmac = CryptoJS.HmacSHA512(value, secret);
+  return CryptoJS.enc.Hex.stringify(hmac);
 };

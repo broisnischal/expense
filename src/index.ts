@@ -38,6 +38,7 @@ import schema from "./drizzle";
 import khalti from "./api/khalti";
 import esewa from "./api/esewa";
 import { ProductInsertType } from "./drizzle/schema/product";
+import npx from "./api/npx";
 
 export type Bindings = {
   [key in keyof CloudflareBindings]: CloudflareBindings[key];
@@ -99,6 +100,7 @@ app
   .route("/app", expenseApi)
   .route("/khalti", khalti)
   .route("/esewa", esewa)
+  .route("/npx", npx)
   .onError(errorHandler);
 
 app.get("/", async (c) => {
